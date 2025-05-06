@@ -13,6 +13,8 @@ COPY package*.json ./
 RUN npm install
 COPY . .
 RUN npm run build:backend
+RUN npm run build:backend
+
 
 # Production stage
 FROM node:16-alpine as production-stage
