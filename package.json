@@ -4,11 +4,16 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "build:frontend": "vite build", 
-    "build:backend": "tsc -p backend/", 
-    "dev:frontend": "vite", 
+    "build:frontend": "vite build",
+    "build:backend": "tsc -p backend/",
+    "dev:frontend": "vite",
     "dev:backend": "nodemon server.js",
-    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\""
+    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "lint": "vue-tsc --noEmit && vite lint",
+    "lint:fix": "vue-tsc --noEmit && vite lint --fix",
+    "test": "vue-tsc --noEmit && vite test",
+    "build": "npm run build:frontend && npm run build:backend",
+    "start:prod": "node server.js"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.7.2",
