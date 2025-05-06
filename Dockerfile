@@ -1,37 +1,40 @@
-# Build stage for frontend
-FROM node:16-alpine as frontend-build
+# =============================
+# 🧱 Build Frontend (Vue)
+# =============================
+FROM node:18-alpine AS frontend-build
+
 WORKDIR /app
+
 COPY package*.json ./
 RUN npm install
+
+# Copy all source files
 COPY . .
+
+# Build Vue frontend (assumes code is in src/)
 RUN npm run build:frontend
 
-# Build stage for backend
-FROM node:16-alpine as backend-build
-WORKDIR /app
-COPY package*.json ./
-RUN npm install
-COPY . .
-RUN npm run build:backend
-RUN npm run build:backend
 
+# =============================
+# 🚀 Production Image
+# =============================
+FROM node:18-alpine
 
-# Production stage
-FROM node:16-alpine as production-stage
 WORKDIR /app
 
-# Copy frontend build
-COPY --from=frontend-build /app/dist /app/dist
-
-# Copy backend build
-COPY --from=backend-build /app/server.js /app/server.js
-
-# Install production dependencies
+# Copy only necessary files
 COPY package*.json ./
 RUN npm install --production
 
-# Expose the port the app runs on
+# Copy backend files (assuming server.js is your backend entry point)
+COPY server.js .          
+# Or server.ts if transpiled before
+
+# Copy frontend build output
+COPY --from=frontend-build /app/dist ./dist
+
+# Expose backend port
 EXPOSE 3002
 
-# Command to run the application
+# Start the server
 CMD ["node", "server.js"]
