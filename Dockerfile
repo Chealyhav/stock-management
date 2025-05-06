@@ -24,6 +24,7 @@ WORKDIR /app
 
 # Copy only necessary files
 COPY package*.json ./
+COPY package-lock.json ./
 RUN npm ci --production
 
 # Copy backend files (assuming server.js is your backend entry point)
