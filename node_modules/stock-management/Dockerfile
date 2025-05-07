@@ -1,40 +1,42 @@
-# =============================
-# 🧱 Build Frontend (Vue)
-# =============================
-FROM node:18-alpine AS frontend-build
+# ---------- Build stage ----------
+    FROM node:18-alpine AS build
 
-WORKDIR /app
-
-COPY package*.json ./
-RUN npm install
-
-# Copy all source files
-COPY . .
-
-# Build Vue frontend (assumes code is in src/)
-RUN npm run build:frontend
-
-
-# =============================
-# 🚀 Production Image
-# =============================
-FROM node:18-alpine
-
-WORKDIR /app
-
-# Copy only necessary files
-COPY package*.json ./
-RUN npm ci --production
-
-# Copy backend files (assuming server.js is your backend entry point)
-COPY server.js .          
-# Or server.ts if transpiled before
-
-# Copy frontend build output
-COPY --from=frontend-build /app/dist ./dist
-
-# Expose backend port
-EXPOSE 3002
-
-# Start the server
-CMD ["node", "server.js"]
+    # Set working directory
+    WORKDIR /app
+    
+    # Install dependencies
+    COPY package*.json ./
+    RUN npm install
+    
+    # Copy source code
+    COPY . .
+    
+    # Build the app (if it's a frontend app like React/Vite)
+    # Uncomment below if applicable
+    # RUN npm run build
+    
+    # ---------- Production stage ----------
+    FROM node:18-alpine
+    
+    # Set working directory
+    WORKDIR /app
+    
+    # Copy only the production dependencies
+    COPY package*.json ./
+    RUN npm install --omit=dev
+    
+    # Copy built files or source files
+    COPY --from=build /app .
+    
+    # Use this if it's a frontend app (e.g., built to /app/dist)
+    # COPY --from=build /app/dist ./dist
+    
+    # Environment setup
+    ENV NODE_ENV=production
+    
+    # Expose port (change if needed)
+    EXPOSE 3000
+    
+    # Command to run app
+    CMD ["node", "server.js"]
+    
